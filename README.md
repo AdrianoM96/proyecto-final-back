@@ -3,7 +3,7 @@ Este proyecto backend es un E-Commerce de indumentaria, realizado con Node y Mon
 Aqui el repo (https://github.com/AdrianoM96/proyecto-final) 
 
 ## Demo
- ![](./src/assets/gif/demo.gif)
+ .... ![](./src/assets/gif/demo.gif)
 
 ## Instalacion
 1) Clonar el repositorio.
