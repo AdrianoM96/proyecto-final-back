@@ -1,6 +1,6 @@
-# proyecto-final
+# proyecto-final-backend
 Este proyecto backend es un E-Commerce de indumentaria, realizado con Node y Mongo y utilizando un proyecto front end hecho en NextJs
-Aqui el repo [................](https://github.com/AdrianoM96/proyecto-final-back)
+Aqui el repo (https://github.com/AdrianoM96/proyecto-final) 
 
 ## Demo
  ![](./src/assets/gif/demo.gif)
@@ -19,7 +19,7 @@ npm start
 El proyecto estará disponible en http://localhost:5000
 
 
-[env.example](https://github.com/AdrianoM96/cresselia-MIGNINI/blob/workshop/.env.example)
+
 
 
 
