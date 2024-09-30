@@ -5,8 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors')
 const cookieParser = require('cookie-parser');
-const createAdminUser = require('./utils/initAdmin');
-
+const { createAdminUser } = require('./utils/initAdmin');
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const countryRoutes = require('./routes/countryRoutes');
