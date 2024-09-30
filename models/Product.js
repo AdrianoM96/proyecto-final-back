@@ -8,7 +8,8 @@ const productSchema = new mongoose.Schema({
     subCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'SubCategory' },
     images: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductImage' }],
     stocks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductStock' }],
-    gender: { type: String }
+    gender: { type: String },
+    isPaused: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('Product', productSchema);

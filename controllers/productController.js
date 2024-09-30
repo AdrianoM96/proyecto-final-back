@@ -188,19 +188,31 @@ const createProduct = async (req, res) => {
 
 
 const getProducts = async (req, res) => {
-
-
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit);
         const startIndex = (page - 1) * limit;
         const gender = req.query.gender || null;
         const search = req.query.search || null;
+        const categoryName = req.query.category || null;
+
+
 
         let query = {};
         if (gender) {
             query.gender = gender;
         }
+
+
+        let categoryId = null;
+        if (categoryName) {
+            const category = await Category.findOne({ name: categoryName });
+            if (category) {
+                categoryId = category._id;
+                query.category = categoryId;
+            }
+        }
+
 
         if (search) {
             query.$or = [
@@ -208,7 +220,6 @@ const getProducts = async (req, res) => {
                 { description: { $regex: search, $options: 'i' } },
             ];
         }
-
 
         const products = await Product.find(query)
             .skip(startIndex)
@@ -224,18 +235,20 @@ const getProducts = async (req, res) => {
                 select: '_id url'
             });
 
-
-
-
-
         const totalProducts = await Product.countDocuments(query);
+
+        if (!products || products.length === 0) {
+            console.error("No products found");
+            return res.status(404).json({ message: "No products found" });
+        }
+
         const totalPages = Math.ceil(totalProducts / limit);
         const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
         const formattedProductsForAll = products.map(product => ({
             ...product.toObject(),
             images: product.images.map(image => image.url)
-        }))
+        }));
 
         const formattedProductsAdm = products.map(product => ({
             ...product.toObject(),
@@ -243,15 +256,12 @@ const getProducts = async (req, res) => {
                 _id: image._id,
                 url: image.url
             })),
-
-
             stocks: product.stocks.sort((a, b) => {
                 const sizeA = a.size.name.toUpperCase();
                 const sizeB = b.size.name.toUpperCase();
                 return sizeOrder.indexOf(sizeA) - sizeOrder.indexOf(sizeB);
             })
         }));
-
 
         res.status(200).json({
             currentPage: page,
@@ -261,10 +271,11 @@ const getProducts = async (req, res) => {
         });
 
     } catch (error) {
+        console.error("Error fetching products", error);
         res.status(400).json({ message: 'Error fetching products', error });
     }
-
 };
+
 
 
 const getProductById = async (req, res) => {
@@ -289,7 +300,9 @@ const getProductById = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const { id } = req.params;
-    const { name, description, price, category, subCategory, images, stocks, gender } = req.body;
+    const { name, description, price, category, subCategory, images, stocks, gender, isPaused } = req.body;
+
+
 
     try {
         const product = await Product.findById(id);
@@ -304,7 +317,10 @@ const updateProduct = async (req, res) => {
             subCategory: product.subCategory,
             images: product.images,
             gender: product.gender,
+            isPaused: product.isPaused,
         };
+
+
 
         product.name = name || product.name;
         product.description = description || product.description;
@@ -313,6 +329,10 @@ const updateProduct = async (req, res) => {
         product.subCategory = subCategory || product.subCategory;
         product.images = images || product.images;
         product.gender = gender || product.gender;
+        product.isPaused = isPaused;
+
+
+
 
         const updatedProduct = await product.save();
 

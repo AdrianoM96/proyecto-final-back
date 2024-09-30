@@ -11,7 +11,7 @@ const orderItemSchema = new mongoose.Schema({
     },
     size: {
         type: String,
-        enum: ['S', 'M', 'L', 'XL'],
+        enum: ['XS', 'S', 'M', 'L', 'XL'],
         required: true,
     },
     order: {
