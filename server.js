@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors')
 const cookieParser = require('cookie-parser');
+const createAdminUser = require('./utils/initAdmin');
 
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
@@ -49,8 +50,9 @@ app.use(cookieParser());
 mongoose.connect(process.env.MONGO_URI, {
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000
-}).then(() => {
+}).then(async () => {
     console.log('MongoDB connected');
+    await createAdminUser();
 }).catch((err) => {
     console.error(err);
 });
