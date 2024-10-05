@@ -18,7 +18,9 @@ npm start
 ``` 
 El proyecto estará disponible en http://localhost:5000
 
+# Aclaracion
 
+Debes ejecutar  ``` ./ngrok http tu puerto ```, para que pueda funcionar correctamente mercadoPago
 
 
 
