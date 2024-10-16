@@ -1,14 +1,19 @@
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
-
+require('dotenv').config();
 
 
 const client = new MercadoPagoConfig({
     accessToken: "APP_USR-3748332052206864-092621-0523122aaf56ef36ba797c5141981741-2010018230"
 });
 
+
 exports.createPreference = async (req, res) => {
 
+    const success = process.env.MP_SUCCESS || ""
+    const fail = process.env.MP_FAIL || ""
+    const pending = process.env.MP_PENDING || ""
+    const notification = process.env.MP_NOTIFICATION || ""
 
     try {
         const items = req.body.items.map(item => ({
@@ -22,12 +27,12 @@ exports.createPreference = async (req, res) => {
             items: items,
 
             back_urls: {
-                success: `https://cents-effectiveness-permalink-source.trycloudflare.com/orders/${req.body.orderId}`,
-                failure: `https://cents-effectiveness-permalink-source.trycloudflare.com/orders/${req.body.orderId}`,
-                pending: `https://cents-effectiveness-permalink-source.trycloudflare.com/orders/${req.body.orderId}`
+                success: `${success}/orders/${req.body.orderId}`,
+                failure: `${fail}/orders/${req.body.orderId}`,
+                pending: `${pending}/orders/${req.body.orderId}`
             },
             auto_return: "approved",
-            notification_url: "https://1288-2a09-bac5-a9-1b9-00-2c-11c.ngrok-free.app/api/mercadopago/webhook"
+            notification_url: `${notification}/api/mercadopago/webhook`
         };
 
         const preference = new Preference(client);

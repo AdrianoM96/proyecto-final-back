@@ -6,6 +6,7 @@ require('dotenv').config();
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const dotenv = require('dotenv');
 
 const sendEmail = async (name, to, facturaId) => {
 
@@ -82,6 +83,7 @@ const emailHelper = async (req, res) => {
 
 const sendVerificationEmail = async (to, verificationToken) => {
     const subject = "Verifica tu dirección de correo electrónico";
+    const urlVerifytoken = process.env.EMAIL_VERIFICATION_TOKEN || "http://localhost:5000"
 
     const text = `
    <html>
@@ -103,7 +105,7 @@ const sendVerificationEmail = async (to, verificationToken) => {
               <p>Gracias por registrarte en nuestro servicio. Para completar tu registro, 
               por favor verifica tu dirección de correo electrónico haciendo clic en el siguiente botón:</p>
               <p style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
-                <a href="http://localhost:5000/api/email/verify?token=${verificationToken}" 
+                <a href="${urlVerifytoken}/api/email/verify?token=${verificationToken}" 
                    style="background-color: #3498db; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 4px; font-weight: bold;">
                   Verificar mi correo electrónico
                 </a>
@@ -186,6 +188,7 @@ const verificationUser = async (req, res) => {
 
 const verifyTokenEmail = async (req, res) => {
     const { token } = req.query;
+    const redirect = process.env.EMAIL_REDIRECT || "http://localhost:3000"
 
 
     try {
@@ -205,11 +208,12 @@ const verifyTokenEmail = async (req, res) => {
 
         await user.save();
 
-        res.redirect('http://localhost:3000/profile');
+        res.redirect(redirect + "/profile");
 
     } catch (error) {
         console.error('Error:', error);
-        res.redirect('http://localhost:3000/profile');
+        res.redirect(redirect + "/profile");
+
     }
 
 };
