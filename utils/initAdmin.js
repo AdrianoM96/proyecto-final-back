@@ -22,9 +22,7 @@ const createAdminUser = async () => {
             });
 
             await adminUser.save();
-            console.log('Admin user created');
-        } else {
-            console.log('Admin user already exists');
+
         }
     } catch (error) {
         console.error('Error creating admin user:', error);

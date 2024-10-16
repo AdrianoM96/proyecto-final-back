@@ -4,6 +4,7 @@ const {
     createOrder,
     getOrdersPaginatedByUser,
     orderComplete,
+    updateOrderStock,
     getAllOrders,
     getOrderById,
     getOrdersByUserId,
@@ -19,6 +20,7 @@ router.get('/', getOrdersPaginatedByUser);
 router.get('/all', getAllOrders);
 router.get('/:id', getOrderById);
 router.get('/user/:id', getOrdersByUserId);
+router.put('/stock', protect, updateOrderStock);
 router.put('/:id', protect, updateOrder);
 router.delete('/:id', protect, verifyRole(['admin']), deleteOrder);
 

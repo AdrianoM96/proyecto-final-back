@@ -19,7 +19,7 @@ const manageStocks = async (productId, stocks, previousStocks) => {
 
 
         if (!stocks || !Array.isArray(stocks) || stocks.length === 0) {
-            console.log("No se recibieron stocks para procesar.");
+
             return;
         }
 
@@ -77,7 +77,7 @@ const rollbackStocks = async (productId, previousStocks) => {
 
         const stockIds = previousStocks.map(stock => stock._id);
         await Product.findByIdAndUpdate(productId, { stocks: stockIds });
-        console.log("Rollback de stocks completado.");
+
     } catch (rollbackError) {
         console.error("Error al realizar el rollback de los stocks:", rollbackError);
     }
@@ -168,14 +168,12 @@ const createProduct = async (req, res) => {
             if (savedProduct) {
 
                 await rollbackStocks(savedProduct._id, previousStocks);
-                console.log("Rollback de stocks completado.");
 
 
                 await Product.findByIdAndDelete(savedProduct._id);
-                console.log(`Producto ${savedProduct._id} eliminado durante el rollback`);
 
                 await ProductImage.deleteMany({ product: savedProduct._id });
-                console.log(`Imágenes asociadas al producto ${savedProduct._id} eliminadas durante el rollback`);
+
             }
         } catch (rollbackError) {
             console.error("Error durante el rollback:", rollbackError);
@@ -359,7 +357,6 @@ const updateProduct = async (req, res) => {
 
             res.status(200).json(updatedProduct);
         } catch (error) {
-            console.log("Error managing stocks");
 
 
             Object.assign(product, originalProduct);

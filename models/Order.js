@@ -24,15 +24,7 @@ const orderSchema = new mongoose.Schema({
     paidAt: {
         type: Date,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-        updatedAt: true,
-    },
+
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -49,7 +41,9 @@ const orderSchema = new mongoose.Schema({
     transactionId: {
         type: String,
         default: ""
-    },
+    }
+}, {
+    timestamps: true
 });
 
 const Order = mongoose.model('Order', orderSchema);

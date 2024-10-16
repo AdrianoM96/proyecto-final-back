@@ -7,6 +7,10 @@ const Product = require('../models/Product');
 const ProductStock = require('../models/ProductStock');
 const User = require('../models/User');
 
+
+const { buildFacturaPDF } = require('./pdfController');
+const { sendEmail } = require('../helpers/emailHelper');
+
 const mongoose = require('mongoose');
 
 const createOrder = async (req, res) => {
@@ -80,7 +84,7 @@ const orderComplete = async (req, res) => {
         await addOrderToUser(user, savedOrder);
 
 
-        stockChanges = await updateProductStocks(productIds, stockChanges);
+
 
 
         const savedOrderAddress = await verifyAndAddOrderAddress(countryId, restAddress, savedOrder._id);
@@ -94,7 +98,7 @@ const orderComplete = async (req, res) => {
     } catch (error) {
         console.error('Error creando la ordenn:', error.message);
 
-        await handleOrderError(savedOrder, insertedOrderItems, stockChanges);
+        await handleOrderError(savedOrder, insertedOrderItems);
         res.status(500).json({ error: 'Error creando la orden', details: error.message });
     }
 };
@@ -135,7 +139,7 @@ const addOrderToUser = async (user, order) => {
     return await user.save();
 };
 
-const updateProductStocks = async (productIds, stockChanges) => {
+const updateProductStocks = async (productIds, shouldUpdate = true) => {
     const sizeNames = [...new Set(productIds.map(p => p.size))];
     const sizes = await Size.find({ name: { $in: sizeNames } });
     const sizeMap = sizes.reduce((acc, size) => {
@@ -143,45 +147,54 @@ const updateProductStocks = async (productIds, stockChanges) => {
         return acc;
     }, {});
 
-
     const missingSizes = sizeNames.filter(name => !sizeMap[name]);
     if (missingSizes.length > 0) {
-        throw new Error(`No se encontraron los siguientes tamaños: ${missingSizes.join(', ')}`);
+        return {
+            ok: false,
+            errors: `No se encontraron los siguientes tamaños: ${missingSizes.join(', ')}`
+        };
     }
 
     const productIdsSet = [...new Set(productIds.map(p => p.productId))];
-
-
     const products = await Product.find({ _id: { $in: productIdsSet } });
     const productsMap = products.reduce((acc, product) => {
         acc[product._id.toString()] = product.name;
         return acc;
     }, {});
 
-    return await Promise.all(productIds.map(async (p) => {
+    const stockChecks = await Promise.all(productIds.map(async (p) => {
         const sizeId = sizeMap[p.size];
         const productStock = await ProductStock.findOne({ product: p.productId, size: sizeId });
+
         if (!productStock) {
-            const productName = productsMap[p.productId.toString()]
-            throw new Error(`No se encontró stock para el producto ${productName} con la talla ${p.size}`);
+            const productName = productsMap[p.productId.toString()];
+            return { productName, size: p.size, message: 'No stock found' };
         }
 
-        const originalQuantity = productStock.quantity;
-        productStock.quantity -= p.quantity;
-        if (productStock.quantity < 0) {
-            const productName = productsMap[p.productId.toString()]
-            throw new Error(`El producto ${productName} con talla ${p.size} no tiene suficiente stock`);
+        if (productStock.quantity < p.quantity) {
+            const productName = productsMap[p.productId.toString()];
+            return { productName, size: p.size, message: 'Insufficient stock' };
         }
 
-        stockChanges.push({
-            productStockId: productStock._id,
-            originalQuantity,
-            newQuantity: productStock.quantity,
-        });
 
-        return productStock.save();
+        if (shouldUpdate) {
+            productStock.quantity -= p.quantity;
+            await productStock.save();
+        }
+
+        return null;
     }));
+
+
+    const errors = stockChecks.filter(item => item !== null);
+
+    if (errors.length > 0) {
+        return { ok: false, errors };
+    }
+
+    return { ok: true };
 };
+
 
 
 const verifyAndAddOrderAddress = async (countryId, restAddress, orderId) => {
@@ -208,7 +221,7 @@ const verifyAndAddOrderAddress = async (countryId, restAddress, orderId) => {
 };
 
 
-const handleOrderError = async (order, orderItems, stockChanges) => {
+const handleOrderError = async (order, orderItems) => {
     if (order) {
         await Order.findByIdAndDelete(order._id);
     }
@@ -216,10 +229,29 @@ const handleOrderError = async (order, orderItems, stockChanges) => {
         const orderItemIds = orderItems.map(item => item._id);
         await OrderItem.deleteMany({ _id: { $in: orderItemIds } });
     }
-    for (const change of stockChanges) {
-        await ProductStock.findByIdAndUpdate(change.productStockId, { quantity: change.originalQuantity });
+
+};
+
+
+const updateOrderStock = async (req, res) => {
+    const productIds = req.body.productIds
+    const update = req.body.update
+
+
+
+    try {
+
+        const response = await updateProductStocks(productIds, update)
+
+
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating stocks', error });
     }
 };
+
+
+
 
 const getAllOrders = async (req, res) => {
     try {
@@ -280,33 +312,18 @@ const getOrderById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const order = await Order.findById(id)
-            .populate('user')
-            .populate({
-                path: 'orderItems',
-                populate: {
-                    path: 'product',
-                    populate: {
-                        path: 'images',
-                        model: 'ProductImage'
-                    }
-                }
-            })
-            .populate({
-                path: 'orderAddress',
-                populate: {
-                    path: 'country'
-                }
-            })
-
+        const order = await updateOrderPrices(id)
         if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
+            return res.status(404).json({ message: 'Order not found or not updated' });
         }
+
+
         res.status(200).json(order);
     } catch (error) {
         res.status(400).json({ message: 'Error fetching order', error });
     }
 };
+
 const getOrdersByUserId = async (req, res) => {
     const { id } = req.params;
     try {
@@ -344,33 +361,116 @@ const updateOrder = async (req, res) => {
     const { id } = req.params;
     const { subTotal, tax, total, itemsInOrder, isPaid, paidAt, user, orderItems, orderAddress, transactionId } = req.body;
 
-
     try {
-        const order = await Order.findById(id);
+        const order = await Order.findById(id)
+            .populate('user')
+            .populate({
+                path: 'orderItems',
+                populate: {
+                    path: 'product',
+                    select: '_id price name'
+                }
+            })
+            .populate('orderAddress');
+
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
 
 
-        order.subTotal = subTotal || order.subTotal;
-        order.tax = tax || order.tax;
-        order.total = total || order.total;
-        order.itemsInOrder = itemsInOrder || order.itemsInOrder;
-        order.isPaid = isPaid || order.isPaid;
-        order.paidAt = paidAt || order.paidAt;
-        order.user = user || order.user;
-        order.orderItems = orderItems || order.orderItems;
-        order.orderAddress = orderAddress || order.orderAddress;
-        order.transactionId = transactionId || order.transactionId;
-
+        Object.assign(order, {
+            subTotal: subTotal || order.subTotal,
+            tax: tax || order.tax,
+            total: total || order.total,
+            itemsInOrder: itemsInOrder || order.itemsInOrder,
+            isPaid: isPaid || order.isPaid,
+            paidAt: paidAt || order.paidAt,
+            user: user || order.user,
+            orderItems: orderItems || order.orderItems,
+            orderAddress: orderAddress || order.orderAddress,
+            transactionId: transactionId || order.transactionId
+        });
 
         await order.save();
 
-        res.status(200).json(order);
+
+        const pdfPath = await buildFacturaPDF(req.body, order);
+
+        const emailSend = await sendEmail(order.user.name, order.user.email, order._id)
+
+        res.status(200).json({ message: 'Order updated and invoice generated', order });
     } catch (error) {
-        res.status(400).json({ message: 'Error updating order', error });
+        res.status(400).json({ message: 'Error updating order', error: error.message });
     }
 };
+
+
+const updateOrderPrices = async (id) => {
+    try {
+        const order = await Order.findById(id)
+            .populate('user')
+            .populate({
+                path: 'orderItems',
+                populate: {
+                    path: 'product',
+                    select: '_id price images',
+                    populate: {
+                        path: 'images',
+                        model: 'ProductImage'
+                    }
+                }
+            })
+            .populate({
+                path: 'orderAddress',
+                populate: {
+                    path: 'country'
+                }
+            });
+
+
+
+        if (!order) {
+            throw new Error('Order not found');
+        }
+
+        let subTotal = 0;
+        let pricesUpdated = false;
+
+        for (const item of order.orderItems) {
+            const currentProduct = item.product._id;
+
+
+            if (!currentProduct) {
+                throw new Error(`Product not found: ${item.product._id}`);
+            }
+
+            if (item.product.price !== item.price) {
+
+                item.price = item.product.price;
+                pricesUpdated = true;
+            }
+
+            subTotal += item.price * item.quantity;
+        }
+
+        const tax = subTotal * 0.21;
+        const total = subTotal + tax;
+
+        order.subTotal = subTotal;
+        order.tax = tax;
+        order.total = total;
+
+        if (pricesUpdated) {
+            await order.save();
+            return order
+        } else {
+            return order
+        }
+    } catch (error) {
+        throw new Error(`Error updating order prices: ${error.message}`);
+    }
+};
+
 
 const deleteOrder = async (req, res) => {
     const { id } = req.params;
@@ -412,10 +512,26 @@ const deleteOrder = async (req, res) => {
 module.exports = {
     createOrder,
     orderComplete,
+    updateOrderStock,
     getAllOrders,
     getOrdersPaginatedByUser,
     getOrderById,
     getOrdersByUserId,
     updateOrder,
     deleteOrder,
+    updateOrderPrices
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+

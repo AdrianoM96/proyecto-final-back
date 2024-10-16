@@ -6,6 +6,9 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors')
 const cookieParser = require('cookie-parser');
 const { createAdminUser } = require('./utils/initAdmin');
+const { createSizes } = require('./utils/initSizes');
+
+
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const countryRoutes = require('./routes/countryRoutes');
@@ -20,6 +23,10 @@ const productStockRoutes = require('./routes/productStockRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
 const productSizeRoutes = require('./routes/productSizeRoutes');
 const mercadoPagoRoutes = require('./routes/mercadoPagoRoutes');
+const sellerRoutes = require('./routes/sellerRoutes');
+
+const pdfRoutes = require('./routes/pdfRoutes');
+const emailRoutes = require('./routes/emailRoutes');
 
 dotenv.config();
 
@@ -28,10 +35,9 @@ const PORT = process.env.PORT || 5000;
 
 app.use(helmet());
 app.disable('x-powered-by');
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
-}));
+
+app.use(cors());
+app.set('trust proxy', 1);
 
 
 const limiter = rateLimit({
@@ -52,6 +58,7 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(async () => {
     console.log('MongoDB connected');
     await createAdminUser();
+    await createSizes();
 }).catch((err) => {
     console.error(err);
 });
@@ -71,6 +78,11 @@ app.use('/api/product-stocks', productStockRoutes);
 app.use('/api/sub-categories', subCategoryRoutes);
 app.use('/api/sizes', productSizeRoutes);
 app.use('/api/mercadopago', mercadoPagoRoutes);
+app.use('/api/pdf', pdfRoutes);
+app.use('/api/email', emailRoutes);
+app.use('/api/seller', sellerRoutes);
+
+
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
