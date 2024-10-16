@@ -1,14 +1,35 @@
 const Seller = require('../models/Seller');
 
 
+const updateSeller = async (sellerData) => {
+    try {
+        const seller = await Seller.findOneAndUpdate(
+            { singleton: true },
+            sellerData,
+            { new: true }
+        );
+
+        if (!seller) {
+            return { status: 404, message: 'No se encontraron datos fiscales para actualizar.' };
+        }
+
+        return { status: 200, message: 'Datos fiscales actualizados exitosamente.', data: seller };
+    } catch (error) {
+        return { status: 400, message: 'Error al actualizar los datos fiscales', error };
+    }
+};
+
 const addSeller = async (req, res) => {
     const sellerData = req.body;
 
     try {
 
+
         const existingSeller = await Seller.findOne({ singleton: true });
         if (existingSeller) {
-            return res.status(400).json({ message: 'Ya existe un registro de datos fiscales. Solo puede existir uno.' });
+
+            const result = await updateSeller(sellerData);
+            return res.status(result.status).json({ message: result.message, data: result.data });
         }
 
 
@@ -37,26 +58,7 @@ const getSeller = async (req, res) => {
 };
 
 
-const updateSeller = async (req, res) => {
-    const updatedData = req.body;
 
-    try {
-
-        const seller = await Seller.findOneAndUpdate(
-            { singleton: true },
-            updatedData,
-            { new: true }
-        );
-
-        if (!seller) {
-            return res.status(404).json({ message: 'No se encontraron datos fiscales para actualizar.' });
-        }
-
-        res.status(200).json({ message: 'Datos fiscales actualizados exitosamente.', data: seller });
-    } catch (error) {
-        res.status(400).json({ message: 'Error al actualizar los datos fiscales', error });
-    }
-};
 
 module.exports = {
     addSeller,

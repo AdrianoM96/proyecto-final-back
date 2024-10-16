@@ -7,7 +7,6 @@ const sellerSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     email: { type: String, required: true },
     condition: { type: String, required: true },
-    dateNow: { type: String, required: true },
     cuit: { type: String, required: true },
     iibb: { type: String, required: true },
     activityStart: { type: String, required: true },
