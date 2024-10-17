@@ -261,6 +261,7 @@ const getProducts = async (req, res) => {
             })
         }));
 
+        console.log("###")
         res.status(200).json({
             currentPage: page,
             totalPages,
@@ -402,6 +403,12 @@ const deleteProduct = async (req, res) => {
         res.status(400).json({ message: 'Error deleting product', error });
     }
 };
+
+
+
+
+
+
 
 module.exports = {
     createProduct,
