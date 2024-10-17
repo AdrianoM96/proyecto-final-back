@@ -2,8 +2,6 @@
 Este proyecto backend es un E-Commerce de indumentaria, realizado con Node y Mongo y utilizando un proyecto front end hecho en NextJs
 Aqui el repo (https://github.com/AdrianoM96/proyecto-final) 
 
-## Demo
- .... ![](./src/assets/gif/demo.gif)
 
 ## Instalacion
 1) Clonar el repositorio.
@@ -19,8 +17,11 @@ npm start
 El proyecto estará disponible en http://localhost:5000
 
 # Aclaracion
+Las varaibles de entorno de mercado pago deben ser https, si no tienes un host puedes usar ngrok que viene incluido en el proyecto
 
 Debes ejecutar  ``` ./ngrok http tu puerto ```, para que pueda funcionar correctamente mercadoPago
+
+Luego establece correctamente las variables
 
 
 ## Dependencias
