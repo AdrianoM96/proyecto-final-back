@@ -3,7 +3,9 @@ const express = require("express");
 const {
     emailHelper,
     verificationUser,
-    verifyTokenEmail
+    verifyTokenEmail,
+    recoveryPassword,
+    verifyTokenPassword
 } = require('../helpers/emailHelper');
 
 
@@ -13,6 +15,8 @@ router.post('/send-factura', emailHelper);
 
 router.post('/send-verification', verificationUser);
 router.get('/verify', verifyTokenEmail);
+router.post('/send-recovery', recoveryPassword);
+router.post('/reset-password', verifyTokenPassword);
 
 
 

@@ -65,15 +65,16 @@ const authenticateUser = async (req, res) => {
     const { email, password } = req.body;
     try {
 
+
         let user = await User.findOne({ email }).select('+password');
         if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials1' });
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
 
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials2' });
+            return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const userWithoutPassword = await User.findOne({ email }).select('-password');
@@ -89,9 +90,6 @@ const authenticateUser = async (req, res) => {
         const token = await createAccessToken({
             payload
         });
-
-
-
 
         res.cookie("token", token, {
             httpOnly: true,

@@ -236,7 +236,7 @@ const getProducts = async (req, res) => {
         const totalProducts = await Product.countDocuments(query);
 
         if (!products || products.length === 0) {
-            console.error("No products found");
+
             return res.status(404).json({ message: "No products found" });
         }
 
@@ -261,7 +261,7 @@ const getProducts = async (req, res) => {
             })
         }));
 
-        console.log("###")
+
         res.status(200).json({
             currentPage: page,
             totalPages,

@@ -149,7 +149,7 @@ const buildPDF = async (dataFront, dataCallback, endCallback) => {
 
         doc.on("data", dataCallback);
         doc.on("end", endCallback);
-        doc.fontSize(25).text("Report PDF");
+
 
         const { data, headers } = await getReportData(dataFront.reportType, dataFront.año, dataFront.fechaInicio, dataFront.fechaFin);
 

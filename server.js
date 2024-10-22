@@ -7,6 +7,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser');
 const { createAdminUser } = require('./utils/initAdmin');
 const { createSizes } = require('./utils/initSizes');
+const { createCountries } = require('./utils/initCountries');
 
 
 const authRoutes = require('./routes/authRoutes');
@@ -27,6 +28,7 @@ const sellerRoutes = require('./routes/sellerRoutes');
 
 const pdfRoutes = require('./routes/pdfRoutes');
 const emailRoutes = require('./routes/emailRoutes');
+const searchHistory = require('./routes/searchHistoryRoutes');
 
 dotenv.config();
 
@@ -59,6 +61,7 @@ mongoose.connect(process.env.MONGO_URI, {
     console.log('MongoDB connected');
     await createAdminUser();
     await createSizes();
+    await createCountries();
 }).catch((err) => {
     console.error(err);
 });
@@ -81,6 +84,7 @@ app.use('/api/mercadopago', mercadoPagoRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/seller', sellerRoutes);
+app.use('/api/search-history', searchHistory);
 
 
 

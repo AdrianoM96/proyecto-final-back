@@ -140,61 +140,86 @@ const addOrderToUser = async (user, order) => {
 };
 
 const updateProductStocks = async (productIds, shouldUpdate = true) => {
-    const sizeNames = [...new Set(productIds.map(p => p.size))];
-    const sizes = await Size.find({ name: { $in: sizeNames } });
-    const sizeMap = sizes.reduce((acc, size) => {
-        acc[size.name] = size._id;
-        return acc;
-    }, {});
 
-    const missingSizes = sizeNames.filter(name => !sizeMap[name]);
-    if (missingSizes.length > 0) {
-        return {
-            ok: false,
-            errors: `No se encontraron los siguientes tamaños: ${missingSizes.join(', ')}`
-        };
+    try {
+
+        const sizeNames = [...new Set(productIds.map(p => p.size))];
+
+        const sizes = await Size.find({ name: { $in: sizeNames } });
+
+
+        const sizeMap = sizes.reduce((acc, size) => {
+            acc[size.name] = size._id;
+            return acc;
+        }, {});
+
+
+        const missingSizes = sizeNames.filter(name => !sizeMap[name]);
+        if (missingSizes.length > 0) {
+
+            return {
+                ok: false,
+                errors: `No se encontraron los siguientes tamaños: ${missingSizes.join(', ')}`
+            };
+        }
+
+        const productIdsSet = [...new Set(productIds.map(p => p.productId))];
+
+        const products = await Product.find({ _id: { $in: productIdsSet } });
+
+        const productsMap = products.reduce((acc, product) => {
+            acc[product._id.toString()] = product.name;
+            return acc;
+        }, {});
+
+        const stockChecks = await Promise.all(productIds.map(async (p) => {
+            const sizeId = sizeMap[p.size];
+
+            const productStock = await ProductStock.findOne({ product: p.productId, size: sizeId });
+
+            if (!productStock) {
+
+                const productName = productsMap[p.productId.toString()];
+
+                return { productName, size: p.size, message: 'No stock found' };
+            }
+
+            if (productStock.quantity < p.quantity) {
+
+                const productName = productsMap[p.productId.toString()];
+
+                return { productName, size: p.size, message: 'Insufficient stock' };
+            }
+
+            if (shouldUpdate) {
+
+                productStock.quantity -= p.quantity;
+
+                try {
+
+                    await productStock.save();
+
+                } catch (error) {
+
+                }
+            }
+            return null;
+        }));
+
+        const errors = stockChecks.filter(item => item !== null);
+        console.log("Errors found:", errors);
+
+        if (errors.length > 0) {
+            return { ok: false, errors };
+        }
+
+        return { ok: true };
+
+    } catch (error) {
+        console.error("Unexpected error in updateStock:", error);
+        return { ok: false, error: error.message };
     }
-
-    const productIdsSet = [...new Set(productIds.map(p => p.productId))];
-    const products = await Product.find({ _id: { $in: productIdsSet } });
-    const productsMap = products.reduce((acc, product) => {
-        acc[product._id.toString()] = product.name;
-        return acc;
-    }, {});
-
-    const stockChecks = await Promise.all(productIds.map(async (p) => {
-        const sizeId = sizeMap[p.size];
-        const productStock = await ProductStock.findOne({ product: p.productId, size: sizeId });
-
-        if (!productStock) {
-            const productName = productsMap[p.productId.toString()];
-            return { productName, size: p.size, message: 'No stock found' };
-        }
-
-        if (productStock.quantity < p.quantity) {
-            const productName = productsMap[p.productId.toString()];
-            return { productName, size: p.size, message: 'Insufficient stock' };
-        }
-
-
-        if (shouldUpdate) {
-            productStock.quantity -= p.quantity;
-            await productStock.save();
-        }
-
-        return null;
-    }));
-
-
-    const errors = stockChecks.filter(item => item !== null);
-
-    if (errors.length > 0) {
-        return { ok: false, errors };
-    }
-
-    return { ok: true };
 };
-
 
 
 const verifyAndAddOrderAddress = async (countryId, restAddress, orderId) => {
