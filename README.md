@@ -40,6 +40,7 @@ Si no tienes un dominio `https`, puedes usar `ngrok` para exponer tu servidor lo
 
 Este es un ejemplo de lo que debes lograr:
 
+``` 
 MONGO_URI=mongodb://localhost:27017/tu_base_de_datos
 PORT=5000
 JWT_SECRET=tu_secreto_jwt
@@ -59,7 +60,7 @@ EMAIL_VERIFICATION_TOKEN=http://localhost:5000
 EMAIL_RECOVER_PASSWORD=http://localhost:5000
 EMAIL_RECOVERY_PASSWORD_FORM=http://localhost:3000/auth/recover-password
 EMAIL_LOGIN_FORM=http://localhost:3000
-
+``` 
 
 ## Dependencias
 
