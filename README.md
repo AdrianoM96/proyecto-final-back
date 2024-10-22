@@ -58,7 +58,7 @@ EMAIL_REDIRECT=http://localhost:3000
 EMAIL_VERIFICATION_TOKEN=http://localhost:5000
 EMAIL_RECOVER_PASSWORD=http://localhost:5000
 EMAIL_RECOVERY_PASSWORD_FORM=http://localhost:3000/auth/recover-password
-EMAIL_LOGIN_FORM=http://localhost:3000
+EMAIL_LOGIN_FORM=http://localhost:3000```
 
 
 ## Dependencias
