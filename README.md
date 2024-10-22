@@ -47,10 +47,10 @@ JWT_SECRET=tu_secreto_jwt
 JWT_EXPIRES_IN=30d
 
 # MercadoPago
-MP_SUCCESS=https://tu-dominio-WEB.com
-MP_FAIL=https://tu-dominio-WEB.com
-MP_PENDING=https://tu-dominio-WEB.com
-MP_NOTIFICATION=https://tu-dominio-SERVIDOR.com 
+MP_SUCCESS=https://tu-dominio-WEB.com  O Dominio proporcionado por couldflare
+MP_FAIL=https://tu-dominio-WEB.com O Dominio proporcionado por couldflare
+MP_PENDING=https://tu-dominio-WEB.com O Dominio proporcionado por couldflare
+MP_NOTIFICATION=https://tu-dominio-SERVIDOR.com O Dominio proporcionado por NGROK
 
 # Email
 EMAIL_USER=tu_email@gmail.com
