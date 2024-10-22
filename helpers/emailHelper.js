@@ -222,6 +222,7 @@ const sendRecoveryPassword = async (to, recoveryToken) => {
   const subject = "Recuperación de contraseña";
   const urlRecoverPassword = process.env.EMAIL_RECOVERY_PASSWORD_FORM || "http://localhost:5000";
 
+
   const text = `
    <html>
       <head>
@@ -241,7 +242,7 @@ const sendRecoveryPassword = async (to, recoveryToken) => {
               <p>Hola,</p>
               <p>Hemos recibido una solicitud para restablecer tu contraseña. Si realizaste esta solicitud, por favor haz clic en el siguiente botón para establecer una nueva contraseña:</p>
               <p style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
-                <a href="${urlRecoverPassword}?token=${recoveryToken}" 
+                <a href="${urlRecoverPassword}/auth/recover-password?token=${recoveryToken}"      
                    style="background-color: #3498db; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 4px; font-weight: bold;">
                   Restablecer contraseña
                 </a>
@@ -297,6 +298,7 @@ const sendRecoveryPassword = async (to, recoveryToken) => {
 const recoveryPassword = async (req, res) => {
   const { email } = req.body;
 
+
   try {
     const verificationToken = uuidv4();
 
@@ -333,6 +335,8 @@ const recoveryPassword = async (req, res) => {
 const verifyTokenPassword = async (req, res) => {
   const { tokenPassword, data } = req.body;
 
+
+
   const redirect = process.env.EMAIL_LOGIN_FORM || "http://localhost:3000"
 
 
@@ -357,7 +361,7 @@ const verifyTokenPassword = async (req, res) => {
 
     await user.save();
 
-    res.redirect(redirect + "/auth/login");
+    res.redirect(redirect + "/auth/recover-password");
 
   } catch (error) {
     console.error('Error:', error);
