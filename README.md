@@ -36,7 +36,7 @@ Otras variables pueden ser `http`:
 Si no tienes un dominio `https`, puedes usar `ngrok` para exponer tu servidor local de forma segura:
 
 1. Ejecuta `./ngrok http 5000` para exponer tu backend.
-2. Usa la URL `https` generada por `ngrok` en las variables de entorno de MercadoPago.
+2. Usa la URL `https` generada por `ngrok` en las variables que corresponda
 
 Este es un ejemplo de lo que debes lograr:
 
@@ -47,10 +47,10 @@ JWT_SECRET=tu_secreto_jwt
 JWT_EXPIRES_IN=30d
 
 # MercadoPago
-MP_SUCCESS=https://tu-dominio-WEB.com  O Dominio proporcionado por couldflare
-MP_FAIL=https://tu-dominio-WEB.com O Dominio proporcionado por couldflare
-MP_PENDING=https://tu-dominio-WEB.com O Dominio proporcionado por couldflare
-MP_NOTIFICATION=https://tu-dominio-SERVIDOR.com O Dominio proporcionado por NGROK
+MP_SUCCESS=https://tu-dominio-WEB.com  
+MP_FAIL=https://tu-dominio-WEB.com 
+MP_PENDING=https://tu-dominio-WEB.com 
+MP_NOTIFICATION=https://tu-dominio-SERVIDOR.com 
 
 # Email
 EMAIL_USER=tu_email@gmail.com
