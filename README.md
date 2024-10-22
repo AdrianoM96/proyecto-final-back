@@ -26,10 +26,10 @@ Para que MercadoPago funcione correctamente, algunas variables necesitan ser `ht
 
 Otras variables pueden ser `http`:
 
-- **EMAIL_REDIRECT**: URL para redirección después de ciertas acciones de email. Puede ser `http` y configurarse para **frontend**.
-- **EMAIL_VERIFICATION_TOKEN** y **EMAIL_RECOVER_PASSWORD**: URLs para verificar y recuperar contraseñas. Pueden ser `http` y configurarse para **backend**.
-- **EMAIL_RECOVERY_PASSWORD_FORM**: URL del formulario de recuperación de contraseña. Necesita ser `https` porque redirige a un sitio de producción. Configurada para **backend**.
-- **EMAIL_LOGIN_FORM**: URL de redirección para el login. Puede ser `http` y configurarse para **frontend**.
+- **EMAIL_REDIRECT**: URL para redirección después de ciertas acciones de email. Configurarse para **frontend**.
+- **EMAIL_VERIFICATION_TOKEN** y **EMAIL_RECOVER_PASSWORD**: URLs para verificar y recuperar contraseñas. Configurarse para **backend**.
+- **EMAIL_RECOVERY_PASSWORD_FORM**: URL del formulario de recuperación de contraseña. Configurarse para **backend**.
+- **EMAIL_LOGIN_FORM**: URL de redirección para el login. Configurarse para **frontend**.
 
 ### Uso de ngrok
 
@@ -37,6 +37,28 @@ Si no tienes un dominio `https`, puedes usar `ngrok` para exponer tu servidor lo
 
 1. Ejecuta `./ngrok http 5000` para exponer tu backend.
 2. Usa la URL `https` generada por `ngrok` en las variables de entorno de MercadoPago.
+
+Este es un ejemplo de lo que debes logar:
+```env
+MONGO_URI=mongodb://localhost:27017/tu_base_de_datos
+PORT=5000
+JWT_SECRET=tu_secreto_jwt
+JWT_EXPIRES_IN=30d
+
+# MercadoPago
+MP_SUCCESS=https://tu-dominio.com/success
+MP_FAIL=https://tu-dominio.com/fail
+MP_PENDING=https://tu-dominio.com/pending
+MP_NOTIFICATION=https://tu-dominio.com/notification
+
+# Email
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASS=tu_contraseña_de_aplicacion
+EMAIL_REDIRECT=http://localhost:3000
+EMAIL_VERIFICATION_TOKEN=http://localhost:5000
+EMAIL_RECOVER_PASSWORD=http://localhost:5000
+EMAIL_RECOVERY_PASSWORD_FORM=http://localhost:3000/auth/recover-password
+EMAIL_LOGIN_FORM=http://localhost:3000
 
 
 ## Dependencias
