@@ -47,10 +47,10 @@ JWT_SECRET=tu_secreto_jwt
 JWT_EXPIRES_IN=30d
 
 # MercadoPago
-MP_SUCCESS=https://tu-dominio.com/success
-MP_FAIL=https://tu-dominio.com/fail
-MP_PENDING=https://tu-dominio.com/pending
-MP_NOTIFICATION=https://tu-dominio.com/notification
+MP_SUCCESS=https://tu-dominio-WEB.com
+MP_FAIL=https://tu-dominio-WEB.com
+MP_PENDING=https://tu-dominio-WEB.com
+MP_NOTIFICATION=https://tu-dominio-SERVIDOR.com 
 
 # Email
 EMAIL_USER=tu_email@gmail.com
