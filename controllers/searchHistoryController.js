@@ -48,7 +48,6 @@ const deleteOldSearchHistory = async () => {
 
         const result = await SearchHistory.deleteMany({ createdAt: { $lt: dateLimit } });
 
-        console.log(`Historiales eliminados: ${result.deletedCount}`);
     } catch (error) {
         console.error('Error al eliminar historiales de búsqueda:', error);
     }

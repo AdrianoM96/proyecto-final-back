@@ -140,6 +140,21 @@ const getSalesData = async (año, fechaInicio, fechaFin) => {
 
 
 const buildPDF = async (dataFront, dataCallback, endCallback) => {
+
+    const fechaInicioDate = new Date(dataFront.fechaInicio);
+    const formattedDateInicio = fechaInicioDate.toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+    });
+
+    const fechaFinDate = new Date(dataFront.fechaFin);
+    const formattedDateFin = fechaFinDate.toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+    });
+
     try {
         if (dataFront.año && dataFront.año === 0) {
             throw new Error('Error al enviar el año');
@@ -156,7 +171,7 @@ const buildPDF = async (dataFront, dataCallback, endCallback) => {
         const table = {
             title: `Reporte de ${dataFront.reportType.charAt(0).toUpperCase() + dataFront.reportType.slice(1)}`,
             subtitle: dataFront.fechaInicio && dataFront.fechaFinal
-                ? `Fecha: de ${dataFront.fechaInicio} a ${dataFront.fechaFinal}`
+                ? `Fecha: de ${formattedDateInicio} a ${formattedDateFin}`
                 : `Año: ${dataFront.año}`,
             headers: headers,
             rows: data.map(item => Object.values(item)),
@@ -173,9 +188,12 @@ const buildPDF = async (dataFront, dataCallback, endCallback) => {
 
 const buildFacturaPDF = async (dataFront, order) => {
 
+
+
     const doc = new PDFDocument({ size: 'A4', margin: 30 });
     const outputPath = path.join(__dirname, '..', 'facturas', `factura-${order._id}.pdf`);
     const stream = fs.createWriteStream(outputPath);
+
 
     doc.pipe(stream);
 
@@ -183,10 +201,18 @@ const buildFacturaPDF = async (dataFront, order) => {
 
 
     const seller = await Seller.findOne({ singleton: true });
-    if (!seller) {
-        return res.status(404).json({ message: 'No se encontraron datos fiscales' });
-    }
+    // if (!seller) {
+    //     return res.status(404).json({ message: 'No se encontraron datos fiscales' });
+    // }
     const dateNow = new Date();
+
+    const formattedDate = dateNow.toLocaleDateString('es-AR', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+    });
+
+
 
     try {
 
@@ -213,7 +239,7 @@ const buildFacturaPDF = async (dataFront, order) => {
         doc.fontSize(16).text('FACTURA B', 420, 30, alignRight);
         doc.fontSize(10)
             .text(`N°${order._id}`, 420, 55, alignRight)
-            .text(`Fecha: ${dateNow}`, 420, 70, alignRight)
+            .text(`Fecha: ${formattedDate}`, 420, 70, alignRight)
             .text(`CUIT: ${seller.cuit}`, 420, 85, alignRight)
             .text(`IIBB: ${seller.iibb}`, 420, 100, alignRight)
             .text(`Inicio de Actividades: ${seller.activityStart}`, 420, 115, alignRight);

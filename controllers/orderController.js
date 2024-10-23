@@ -304,8 +304,15 @@ const getOrdersPaginatedByUser = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const startIndex = (page - 1) * limit;
         const userId = req.query.id;
-        const query = userId ? { user: userId } : {};
 
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const query = user.role === 'admin' ? {} : { user: userId };
 
         const orders = await Order.find(query)
             .skip(startIndex)
@@ -319,10 +326,9 @@ const getOrdersPaginatedByUser = async (req, res) => {
             })
             .populate('orderAddress');
 
-
-
         const totalOrders = await Order.countDocuments(query);
         const totalPages = Math.ceil(totalOrders / limit);
+
         res.status(200).json({
             currentPage: page,
             totalPages,
@@ -332,6 +338,7 @@ const getOrdersPaginatedByUser = async (req, res) => {
         res.status(400).json({ message: 'Error fetching orders', error });
     }
 };
+
 
 const getOrderById = async (req, res) => {
     const { id } = req.params;
@@ -421,7 +428,9 @@ const updateOrder = async (req, res) => {
 
         const pdfPath = await buildFacturaPDF(req.body, order);
 
+
         const emailSend = await sendEmail(order.user.name, order.user.email, order._id)
+
 
         res.status(200).json({ message: 'Order updated and invoice generated', order });
     } catch (error) {
