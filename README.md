@@ -8,7 +8,7 @@ Este proyecto final de la Tecnicatura Universitaria en Programación de la UTN R
     control de órdenes, facturación y la generación de reportes detallados.
 
 
-## Repositorio backend
+## Repositorio frontend
 [FRONTEND](https://github.com/AdrianoM96/proyecto-final)
 
 ## Instalacion
