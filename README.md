@@ -9,7 +9,8 @@ Este proyecto final de la Tecnicatura Universitaria en Programación de la UTN R
 
 
 ## Repositorio backend
-[FRONTEND] (https://github.com/AdrianoM96/proyecto-final)
+[FRONTEND](https://github.com/AdrianoM96/proyecto-final)
+
 ## Instalacion
 1) Clonar el repositorio.
 2) Estando en la raíz del proyecto, corra el comando
