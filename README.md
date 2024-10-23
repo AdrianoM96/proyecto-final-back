@@ -1,4 +1,4 @@
-# PROYECTO FINAL UTN - backend
+# INVICTUS - backend
 Este proyecto final de la Tecnicatura Universitaria en Programación de la UTN Regional Mendoza consiste en una aplicación para la gestión de ventas de una tienda
     de indumentaria. La aplicación utiliza una base de datos MongoDB y una API REST para manejar la lógica de negocio. El frontend está desarrollado en Next.js, 
     con un diseño responsive que garantiza una experiencia de usuario óptima en distintos dispositivos. Los clientes pueden explorar el catálogo de productos,
