@@ -1,6 +1,12 @@
 # PROYECTO FINAL UTN - backend
-Este proyecto backend es un E-Commerce de indumentaria, realizado con Node y Mongo y utilizando un proyecto front end hecho en NextJs
-Aqui el repo (https://github.com/AdrianoM96/proyecto-final) 
+Este proyecto final de la Tecnicatura Universitaria en Programación de la UTN Regional Mendoza consiste en una aplicación para la gestión de ventas de una tienda
+    de indumentaria. La aplicación utiliza una base de datos MongoDB y una API REST para manejar la lógica de negocio. El frontend está desarrollado en Next.js, 
+    con un diseño responsive que garantiza una experiencia de usuario óptima en distintos dispositivos. Los clientes pueden explorar el catálogo de productos,
+    realizar compras y gestionar su cuenta, incluyendo funcionalidades como recuperación y cambio de contraseña, verificación de email, y la recepción de la 
+    factura de compra directamente en su correo electrónico, además de la opción de descargarla desde el apartado de sus órdenes. Los administradores, por su parte,
+    tienen acceso a la gestión de productos,
+    control de órdenes, facturación y la generación de reportes detallados.
+Aqui el repo frontend: (https://github.com/AdrianoM96/proyecto-final) 
 
 
 ## Instalacion
