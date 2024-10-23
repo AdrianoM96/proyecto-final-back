@@ -73,22 +73,13 @@ EMAIL_LOGIN_FORM=http://localhost:3000
 
 - **Axios**: ^1.7.7
 - **Bcryptjs**: ^2.4.3
-- **Cookie-parser**: ^1.4.6
-- **Cors**: ^2.8.5
-- **Dotenv**: ^16.4.5
 - **Express**: ^4.19.2
-- **Express-rate-limit**: ^7.4.0
-- **Helmet**: ^7.1.0
 - **Jsonwebtoken**: ^9.0.2
 - **Mercadopago**: ^2.0.15
 - **Mongodb**: ^6.8.0
 - **Mongoose**: ^8.5.1
-- **Node-cron**: ^3.0.3
 - **Nodemailer**: ^6.9.15
-- **Nodemon**: ^3.1.4
-- **Pdfkit**: ^0.15.0
 - **Pdfkit-table**: ^0.1.99
-- **Uuid**: ^10.0.0
 
 
 
