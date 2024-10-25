@@ -49,7 +49,7 @@ Si no tienes un dominio `https`, puedes usar `ngrok` para exponer tu servidor lo
 Este es un ejemplo de lo que debes lograr:
 
 ``` 
-MONGO_URI=mongodb://localhost:27017/tu_base_de_datos
+MONGODB_URI=mongodb://localhost:27017/tu_base_de_datos
 PORT=5000
 JWT_SECRET=tu_secreto_jwt
 JWT_EXPIRES_IN=30d

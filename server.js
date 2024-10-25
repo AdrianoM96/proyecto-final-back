@@ -54,7 +54,7 @@ app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
     serverSelectionTimeoutMS: 10000,
     socketTimeoutMS: 45000
 }).then(async () => {
